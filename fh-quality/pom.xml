@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fhquality</groupId>
+	<artifactId>fh-quality</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+
+	<name>fh-quality</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<modules>
+		<module>fh-quality-infrastructure</module>
+		<module>fh-quality-domain</module>
+		<module>fh-quality-app</module>
+		<module>fh-quality-common</module>
+		<module>fh-quality-service</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>maven-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven 1</name>
+			<url>http://download.java.net/maven/1/</url>
+			<layout>legacy</layout>
+		</repository>
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven 2</name>
+			<url>http://download.java.net/maven/2/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven2-repository.dev.java.net</id>
+			<url>http://download.java.net/maven/2/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<version>2.1.3</version>
+		</dependency>
+	</dependencies>
+</project>

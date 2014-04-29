@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="fh-quality-service">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/"/>
+        <dependent-module archiveName="fh-quality-app-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-app/fh-quality-app">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="fh-quality-common-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-common/fh-quality-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="fh-quality-domain-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-domain/fh-quality-domain">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="fh-quality-infrastructure-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-infrastructure/fh-quality-infrastructure">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="fh-quality-service"/>
+        <property name="java-output-path" value="/fh-quality-service/target/classes"/>
+    </wb-module>
+</project-modules>
