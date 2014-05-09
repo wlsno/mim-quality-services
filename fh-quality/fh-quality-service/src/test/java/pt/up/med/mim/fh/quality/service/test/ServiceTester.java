@@ -1,54 +1,74 @@
 package pt.up.med.mim.fh.quality.service.test;
 
-import pt.up.med.mim.fh.quality.domain.inference.common.InferenceAlgorithm;
-import pt.up.med.mim.fh.quality.domain.ws.input.FormInputData;
-import pt.up.med.mim.fh.quality.domain.ws.input.InputField;
-import pt.up.med.mim.fh.quality.domain.ws.ouput.FormAssessmentOutput;
-import pt.up.med.mim.fh.quality.domain.ws.ouput.FormField;
+import java.util.ArrayList;
+import java.util.List;
+
+import pt.up.med.mim.fh.quality.service.domain.entities.InferenceAlgorithm;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputCaseConfig;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputCaseData;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputParameter;
+import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.OutputCategory;
+import pt.up.med.mim.fh.quality.service.domain.entities.OutputParameter;
 import pt.up.med.mim.fh.quality.services.DataValidation;
 
 public class ServiceTester {
 
-	private static FormInputData form = null;
+	private static InputCase form = null;
 	private static String formId = "adverseReaction";
-	private static char noEvidenceMarker = '?';
+	private static String noEvidenceMarker = "?";
 
 	public static void main(String[] args) {
 		buildInputData();
 		
 		DataValidation validation = new DataValidation();
-		FormAssessmentOutput output = validation.validateForm(form);
+		OutputCase output = validation.validateCase(form);
 		
 		printPrettyOutput(output);
 	}
 
 	private static void buildInputData() {
-		form = new FormInputData();
-
-		form.setAlgorithm(InferenceAlgorithm.LOOPYBELIEFPROPAGATION);
-		form.setFormID(formId);
-		form.setNoEvidenceMarker(noEvidenceMarker);
+		form = new InputCase();
+		
+		InputCaseData data = new InputCaseData();
+		data.setId(formId);
+		form.setData(data);
 		
 		buildInputParameters();	
+		
+		buildConfiguration();
+	}
+	
+	private static void buildConfiguration() {
+		InputCaseConfig config = new InputCaseConfig();
+		config.setAlgorithm(InferenceAlgorithm.LOOPYBELIEFPROPAGATION);
+		config.setNoEvidenceMark(noEvidenceMarker);
+		
+		form.setConfiguration(config);
+		
 	}
 
 	private static void buildInputParameters() {
 		
-		form.addField(new InputField("Described", "Described", "No", Boolean.TRUE));
-		form.addField(new InputField("Concomitant", "Concomitant", "No", Boolean.TRUE));
-		form.addField(new InputField("Suspended", "Suspended", "Yes", Boolean.TRUE));
-		form.addField(new InputField("Reintroduced", "Reintroduced", "No", Boolean.TRUE));
-		form.addField(new InputField("Reappeared", "Reappeared", "NA", Boolean.TRUE));
-		form.addField(new InputField("Notifier", "Notifier", "Nurse", Boolean.TRUE));
-		form.addField(new InputField("ImprovedAfterSuspension", "ImprovedAfterSuspension", "NA", Boolean.TRUE));
-		form.addField(new InputField("Administration", "Administration", "Injectable", Boolean.TRUE));
-		form.addField(new InputField("SuspectedInteraction", "SuspectedInteraction", "No", Boolean.TRUE));
-		form.addField(new InputField("PharmaGroup", "PharmaGroup", "GastrointestinalSystem", Boolean.TRUE));
+		List<InputParameter> parameters = new ArrayList<InputParameter>();
+		parameters.add(new InputParameter("Described", "Described", "No", Boolean.TRUE));
+		parameters.add(new InputParameter("Concomitant", "Concomitant", "No", Boolean.TRUE));
+		parameters.add(new InputParameter("Suspended", "Suspended", "Yes", Boolean.TRUE));
+		parameters.add(new InputParameter("Reintroduced", "Reintroduced", "No", Boolean.TRUE));
+		parameters.add(new InputParameter("Reappeared", "Reappeared", "NA", Boolean.TRUE));
+		parameters.add(new InputParameter("Notifier", "Notifier", "Nurse", Boolean.TRUE));
+		parameters.add(new InputParameter("ImprovedAfterSuspension", "ImprovedAfterSuspension", "NA", Boolean.TRUE));
+		parameters.add(new InputParameter("Administration", "Administration", "Injectable", Boolean.TRUE));
+		parameters.add(new InputParameter("SuspectedInteraction", "SuspectedInteraction", "No", Boolean.TRUE));
+		parameters.add(new InputParameter("PharmaGroup", "PharmaGroup", "GastrointestinalSystem", Boolean.TRUE));
 		
-		form.addField(new InputField("Probable", "Probable", "?", Boolean.FALSE));
-		form.addField(new InputField("Conditional", "Conditional", "?", Boolean.FALSE));
-		form.addField(new InputField("Definite", "Definite", "?", Boolean.FALSE));
-		form.addField(new InputField("Possible", "Possible", "?", Boolean.FALSE));
+		parameters.add(new InputParameter("Probable", "Probable", "?", Boolean.FALSE));
+		parameters.add(new InputParameter("Conditional", "Conditional", "?", Boolean.FALSE));
+		parameters.add(new InputParameter("Definite", "Definite", "?", Boolean.FALSE));
+		parameters.add(new InputParameter("Possible", "Possible", "?", Boolean.FALSE));
+		
+		form.getData().setParameters(parameters);
 		
 //		form.addField(new InputField("Described", "Described", "Yes", Boolean.TRUE));
 //		form.addField(new InputField("Concomitant", "Concomitant", "Yes", Boolean.TRUE));
@@ -67,16 +87,22 @@ public class ServiceTester {
 //		form.addField(new InputField("Possible", "Possible", "?", Boolean.FALSE));
 	}
 
-	private static void printPrettyOutput(FormAssessmentOutput output){
-		System.out.println("Resultado");
-		System.out.println(String.format("Rede Bayesiana: %s", output.getDetails().getName()));
+	private static void printPrettyOutput(OutputCase output){
+		System.out.println("Resultado:");
+		System.out.println(String.format("Rede Bayesiana: %s", output.getData().getId()));
 		System.out.println();
-		System.out.println("== Evidência ==");
 		
-		for(FormField field : output.getData()){
-			System.out.println(String.format("\t%s: %s (%s)", field.getAlias(),field.getInstances().get(0).getInstance(), field.getInstances().get(0).getResult()));
+		for (OutputParameter parameter : output.getData().getParameters()) {
+			System.out.println(String.format("Parametro: %s", parameter.getId()));
+			System.out.println(String.format("\tMPC: %s (%s)", parameter.getMostProbableCategory().getName(), parameter.getMostProbableCategory().getProbability()));
+			System.out.println("\tCatergorias");
+			
+			for (OutputCategory category : parameter.getResults()) {
+				System.out.println(String.format("\t\t%s (%s)", category.getName(), category.getProbability()));
+				
+			}
 		}
+
 		System.out.println();
-		System.out.println("== Inferencia ==");
 	}
 }

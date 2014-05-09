@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import pt.up.med.mim.fh.quality.app.dao.QualityModuleDAO;
 import pt.up.med.mim.fh.quality.common.exception.BayesianNetworkException;
 import pt.up.med.mim.fh.quality.domain.inference.beans.DataSetBean;
@@ -94,9 +92,6 @@ public class BayesianInferenceEngine implements IBayesianInference {
 				if(param.getHasEvidence())
 					result.addToParameters(param);
 			}
-			
-			System.out.println(answer.tableString());
-			System.out.println();
 		}
 
 		/* Clean up to avoid memory leaks */
@@ -164,5 +159,4 @@ public class BayesianInferenceEngine implements IBayesianInference {
 
 		return marginalVariables;
 	}
-
 }

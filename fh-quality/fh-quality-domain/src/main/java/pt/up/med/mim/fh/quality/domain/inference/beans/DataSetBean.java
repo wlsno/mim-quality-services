@@ -14,7 +14,7 @@ public class DataSetBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String archtypeId;
-	private Character noEvidenceMarker;
+	private String noEvidenceMarker;
 	private InferenceAlgorithm algorithm;
 	private List<ParameterBean> parameters;
 
@@ -34,11 +34,11 @@ public class DataSetBean implements Serializable {
 		this.archtypeId = archtypeId;
 	}
 
-	public Character getNoEvidenceMarker() {
+	public String getNoEvidenceMarker() {
 		return noEvidenceMarker;
 	}
 
-	public void setNoEvidenceMarker(Character noEvidenceMarker) {
+	public void setNoEvidenceMarker(String noEvidenceMarker) {
 		this.noEvidenceMarker = noEvidenceMarker;
 	}
 
