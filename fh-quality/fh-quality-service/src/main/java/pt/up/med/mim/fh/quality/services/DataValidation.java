@@ -47,41 +47,4 @@ public class DataValidation extends QualityServiceBase implements IQualityServic
 		}
 		return bean;
 	}
-
-//	private FormAssessmentOutput convert(DataSetBean result) {
-//
-//		FormAssessmentOutput serviceResult = new FormAssessmentOutput();
-//		FormDetails details = new FormDetails();
-//		details.setName(result.getArchtypeId());
-//		serviceResult.setDetails(details);
-//
-//		for (ParameterBean parameter : result.getParameters()) {
-//			FormField field = new FormField();
-//			field.setAlias(parameter.getAlias());
-//
-//			// if (parameter.getType().equals(QueryType.MPC)) {
-//			// ParameterInstanceBean instance =
-//			// result.getParameterMPC(parameter.getAlias());
-//			// FieldInstance value = new FieldInstance();
-//			// value.setInstance(instance.getInstanceName());
-//			// value.setResult(instance.getConditionalProbability().toString());
-//			//
-//			// field.setInstances(Collections.singletonList(value));
-//			//
-//			// } else {
-//			List<FieldInstance> fields = new ArrayList<FieldInstance>();
-//			for (ParameterInstanceBean instance : parameter.getInstances()) {
-//				FieldInstance value = new FieldInstance();
-//				value.setInstance(instance.getInstanceName());
-//				value.setResult(instance.getConditionalProbability());
-//				fields.add(value);
-//			}
-//			field.setInstances(fields);
-//			// }
-//
-//			serviceResult.addToFields(field);
-//		}
-//
-//		return serviceResult;
-//	}
 }
