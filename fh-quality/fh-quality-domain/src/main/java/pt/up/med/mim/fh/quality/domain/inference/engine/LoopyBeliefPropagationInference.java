@@ -1,18 +1,16 @@
-package pt.up.med.mim.fh.quality.app.inference;
+package pt.up.med.mim.fh.quality.domain.inference.engine;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import pt.up.med.mim.fh.quality.app.dao.QualityModuleDAO;
 import pt.up.med.mim.fh.quality.common.exception.BayesianNetworkException;
 import pt.up.med.mim.fh.quality.domain.inference.beans.DataSetBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterInstanceBean;
+import pt.up.med.mim.fh.quality.domain.utils.FHQueryUtil;
 import edu.ucla.belief.BeliefNetwork;
 import edu.ucla.belief.FiniteVariable;
 import edu.ucla.belief.InferenceEngine;
@@ -20,12 +18,11 @@ import edu.ucla.belief.Table;
 import edu.ucla.belief.Variable;
 import edu.ucla.belief.approx.BeliefPropagationSettings;
 import edu.ucla.belief.approx.PropagationEngineGenerator;
-import edu.ucla.belief.io.NetworkIO;
 import edu.ucla.belief.io.PropertySuperintendent;
 
-public class BayesianInferenceEngine implements IBayesianInference {
+public class LoopyBeliefPropagationInference extends SamiamInferenceBase implements IBayesianInference {
 	
-	public DataSetBean evaluate(QualityModuleDAO dao, DataSetBean inputdata) throws BayesianNetworkException {
+	public DataSetBean evaluate(FHQueryUtil dao, DataSetBean inputdata) throws BayesianNetworkException {
 
 		BeliefNetwork bn = readNetwork(dao, inputdata.getArchtypeId());
 
@@ -59,8 +56,7 @@ public class BayesianInferenceEngine implements IBayesianInference {
 //		/* Calculate Pr(e) */
 //		double pE = engine.probability();
 
-		@SuppressWarnings("rawtypes")
-		Set setMarginalVariables = buildMarginalVariables(bn, inputdata.getParameters());
+		Set<Variable> setMarginalVariables = buildMarginalVariables(bn, inputdata.getParameters());
 
 		/* Calculate marginals */
 		FiniteVariable varMarginal = null;
@@ -71,14 +67,18 @@ public class BayesianInferenceEngine implements IBayesianInference {
 		result.setArchtypeId(inputdata.getArchtypeId());
 		result.setNoEvidenceMarker(inputdata.getNoEvidenceMarker());
 		
-		for (Iterator marginVarIterator = setMarginalVariables.iterator(); marginVarIterator.hasNext();) {
+		for (Iterator<Variable> marginVarIterator = setMarginalVariables.iterator(); marginVarIterator.hasNext();) {
 			varMarginal = (FiniteVariable) marginVarIterator.next();
+
+			long start = System.nanoTime();
 			answer = engine.conditional(varMarginal);
+			long end = System.nanoTime();
+			System.out.println("Inference LBP: " + TimeUnit.MILLISECONDS.convert((end - start), TimeUnit.NANOSECONDS));
 
 			ParameterBean parameter = new ParameterBean(varMarginal.getID(), varMarginal.getID());
 //			parameter.setType(inputdata.getParameter(varMarginal.getID()).getType());
 			
-			for (Iterator instanceIterator = varMarginal.instances().iterator(); instanceIterator.hasNext();) {
+			for (Iterator<String> instanceIterator = varMarginal.instances().iterator(); instanceIterator.hasNext();) {
 				String instanceName = (String) instanceIterator.next();
 				double[] data = answer.dataclone();
 				double value = data[varMarginal.instances().indexOf(instanceName)];
@@ -98,65 +98,5 @@ public class BayesianInferenceEngine implements IBayesianInference {
 		engine.die();
 
 		return result;
-	}
-
-	/***
-	 * Reads a SamIam Bayesian Network file
-	 * 
-	 * @param networkFilePath - The full path for a Bayesian Network File
-	 * @return a BeliefNetwork
-	 * @throws BayesianNetworkLoadingException
-	 */
-	private BeliefNetwork readNetwork(QualityModuleDAO dao, String networkFilePath) throws BayesianNetworkException {
-
-		BeliefNetwork retBeliefNet = null;
-
-		try {
-			/* Use NetworkIO static method to read network file. */
-			retBeliefNet = NetworkIO.read(dao.getBayesianNetFilepath(networkFilePath));
-		} catch (Exception e) {
-			System.err.println("Error, failed to read \"" + networkFilePath + "\": " + e);
-			throw new BayesianNetworkException();
-		}
-		return retBeliefNet;
-	}
-	
-	private Map<FiniteVariable, Object> buildEvidenceMap(BeliefNetwork bn, List<ParameterBean> parameters) {
-		Map<FiniteVariable, Object> evidence = null;
-		FiniteVariable var = null;
-
-		if (null == parameters || parameters.isEmpty()) {
-			return null;
-		}
-
-		evidence = new HashMap<FiniteVariable, Object>(parameters.size());
-
-		for (ParameterBean parameterBean : parameters) {
-			if (parameterBean.getHasEvidence()) {
-				var = (FiniteVariable) bn.forID(parameterBean.getAlias());
-				evidence.put(var, var.instance(parameterBean.getParameterEvidence().getInstanceName()));
-			}
-		}
-
-		return evidence;
-	}
-
-	private Set<Variable> buildMarginalVariables(BeliefNetwork bn, List<ParameterBean> parameters) {
-
-		Set<Variable> marginalVariables = null;
-
-		if (null == parameters || parameters.isEmpty()) {
-			return null;
-		}
-
-		marginalVariables = new HashSet<Variable>(parameters.size());
-
-		for (ParameterBean parameter : parameters) {
-			if (!parameter.getHasEvidence()) {
-				marginalVariables.add(bn.forID(parameter.getAlias()));
-			}
-		}
-
-		return marginalVariables;
 	}
 }

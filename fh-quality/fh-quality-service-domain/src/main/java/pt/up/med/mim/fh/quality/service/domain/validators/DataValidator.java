@@ -3,13 +3,16 @@ package pt.up.med.mim.fh.quality.service.domain.validators;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterBean;
 import pt.up.med.mim.fh.quality.service.domain.entities.IServiceObject;
 import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
 import pt.up.med.mim.fh.quality.service.domain.entities.InputParameter;
 import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.OutputCaseData;
+import pt.up.med.mim.fh.quality.service.domain.entities.OutputCategory;
+import pt.up.med.mim.fh.quality.service.domain.entities.OutputParameter;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 
 public class DataValidator implements IServiceObjectValidator {
@@ -25,7 +28,7 @@ public class DataValidator implements IServiceObjectValidator {
 			if (serviceObject instanceof InputCase){
 				return validateInputData((InputCase)serviceObject);
 			} else if (serviceObject instanceof OutputCase){
-				//return validateOutputData((OutputCase)serviceObject);
+				return validateOutputData((OutputCase)serviceObject);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,4 +83,47 @@ public class DataValidator implements IServiceObjectValidator {
 		}
 		return true;
 	}
+
+	private List<String> validateOutputData(OutputCase output){
+		
+		if (output.getData() == null || checkDataHeader(output.getData())){
+			Collections.singletonList("");
+		}
+		
+		if (hasInvalidParameter(output.getData().getParameters())){
+			Collections.singletonList("");
+		}
+		
+		return Collections.emptyList();
+	}
+	
+	private boolean checkDataHeader(OutputCaseData data){
+		return StringUtils.isBlank(data.getId());
+	}
+	
+	private boolean hasInvalidParameter(List<OutputParameter> parameters){
+		if (CollectionUtils.isEmpty(parameters))
+			return Boolean.TRUE;
+		
+		for (OutputParameter outputParameter : parameters) {
+			if (StringUtils.isBlank(outputParameter.getId())) {
+				return Boolean.TRUE;
+			}
+			
+			if (CollectionUtils.isEmpty(outputParameter.getResults())){
+				return Boolean.TRUE;
+			}
+			
+			for (OutputCategory category : outputParameter.getResults()) {
+				if (StringUtils.isBlank(category.getName()))
+					return Boolean.TRUE;
+				
+				if (category.getProbability() == null)
+					return Boolean.TRUE;
+			}
+		}
+		
+		return Boolean.FALSE;
+	}
+
 }

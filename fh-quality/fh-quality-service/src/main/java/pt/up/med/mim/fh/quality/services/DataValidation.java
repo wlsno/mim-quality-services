@@ -1,5 +1,7 @@
 package pt.up.med.mim.fh.quality.services;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -21,14 +23,21 @@ public class DataValidation extends QualityServiceBase implements IQualityServic
 	QualityModuleFlux moduleflux = new QualityModuleFlux();
 
 	@WebMethod(operationName = "validateForm")
-	public OutputCase validateCase(@WebParam(name = "inputData") InputCase inputData) {
+	public OutputCase validateCase(@WebParam(name = "inputData") InputCase inputData) {	
 		DataSetBean bean = new DataSetBean();
 		OutputCase result = new OutputCase();
 
 		try {
+
+			System.out.println("Operation Start");
+			long start = System.nanoTime();
 			inferencePreAction(inputData, bean);
 			bean = assessForm(bean);
 			inferencePostAction(result, bean);
+			long end = System.nanoTime();
+			
+			System.out.println("Operation Total: " + TimeUnit.MILLISECONDS.convert((end - start), TimeUnit.NANOSECONDS));
+			System.out.println();
 			return result;
 		} catch (QualityServiceException e) {
 			e.printStackTrace();

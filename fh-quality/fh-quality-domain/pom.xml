@@ -29,5 +29,17 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>fhquality</groupId>
+			<artifactId>fh-quality-common</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.ucla.belief</groupId>
+			<artifactId>inflib</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>/home/willoliveira/Programs/samiam/inflib.jar</systemPath>
+		</dependency>
 	</dependencies>
 </project>
