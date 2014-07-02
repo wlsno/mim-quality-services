@@ -10,7 +10,6 @@ import pt.up.med.mim.fh.quality.common.exception.BayesianNetworkException;
 import pt.up.med.mim.fh.quality.domain.inference.beans.DataSetBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterInstanceBean;
-import pt.up.med.mim.fh.quality.domain.utils.FHQueryUtil;
 import edu.ucla.belief.BeliefNetwork;
 import edu.ucla.belief.FiniteVariable;
 import edu.ucla.belief.InferenceEngine;
@@ -22,9 +21,9 @@ import edu.ucla.belief.io.PropertySuperintendent;
 
 public class LoopyBeliefPropagationInference extends SamiamInferenceBase implements IBayesianInference {
 	
-	public DataSetBean evaluate(FHQueryUtil dao, DataSetBean inputdata) throws BayesianNetworkException {
+	public DataSetBean evaluate(String path, DataSetBean inputdata) throws BayesianNetworkException {
 
-		BeliefNetwork bn = readNetwork(dao, inputdata.getArchtypeId());
+		BeliefNetwork bn = readNetwork(path);
 
 		Map<FiniteVariable, Object> evidence = Collections.emptyMap();
 

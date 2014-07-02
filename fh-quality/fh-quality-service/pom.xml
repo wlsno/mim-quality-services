@@ -84,15 +84,10 @@
 			<groupId>fhquality</groupId>
 			<artifactId>fh-quality-domain</artifactId>
 			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>fhquality</groupId>
-			<artifactId>fh-quality-service-domain</artifactId>
-			<version>0.0.1</version>
 		</dependency>		
 		<dependency>
 			<groupId>fhquality</groupId>
-			<artifactId>fh-quality-infrastructure</artifactId>
+			<artifactId>fh-quality-service-domain</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>

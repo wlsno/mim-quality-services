@@ -9,13 +9,16 @@
         <dependent-module archiveName="fh-quality-common-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-common/fh-quality-common">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="fh-quality-infrastructure-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-infrastructure/fh-quality-infrastructure">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="fh-quality-domain-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-domain/fh-quality-domain">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="fh-quality-service-domain-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-service-domain/fh-quality-service-domain">
+        <dependent-module archiveName="fh-quality-base-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-base/fh-quality-base">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="fh-quality-infrastructure-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-infrastructure/fh-quality-infrastructure">
+        <dependent-module archiveName="fh-quality-service-domain-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/fh-quality-service-domain/fh-quality-service-domain">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="fh-quality-service"/>
