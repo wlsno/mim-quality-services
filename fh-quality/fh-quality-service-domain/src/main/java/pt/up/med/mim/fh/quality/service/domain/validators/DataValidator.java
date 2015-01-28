@@ -6,13 +6,13 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import pt.up.med.mim.fh.quality.service.domain.entities.Category;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceResult;
+import pt.up.med.mim.fh.quality.service.domain.entities.EvaluatedCaseField;
 import pt.up.med.mim.fh.quality.service.domain.entities.IServiceObject;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputParameter;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCaseData;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCategory;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputParameter;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceRequest;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputField;
+import pt.up.med.mim.fh.quality.service.domain.entities.ResponseBody;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 
 public class DataValidator implements IServiceObjectValidator {
@@ -25,10 +25,10 @@ public class DataValidator implements IServiceObjectValidator {
 	public List<String> validate(IServiceObject serviceObject) throws QualityServiceException {
 		
 		try {
-			if (serviceObject instanceof InputCase){
-				return validateInputData((InputCase)serviceObject);
-			} else if (serviceObject instanceof OutputCase){
-				return validateOutputData((OutputCase)serviceObject);
+			if (serviceObject instanceof DataEvaluationServiceRequest){
+				return validateInputData((DataEvaluationServiceRequest)serviceObject);
+			} else if (serviceObject instanceof DataEvaluationServiceResult){
+				return validateOutputData((DataEvaluationServiceResult)serviceObject);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -43,9 +43,9 @@ public class DataValidator implements IServiceObjectValidator {
 	 * @param inputcase
 	 * @return A list of errors or a empty list if no errors were found
 	 */
-	private List<String> validateInputData(InputCase inputCase) {
+	private List<String> validateInputData(DataEvaluationServiceRequest inputCase) {
 		
-		if(!checkParameters(inputCase.getData().getParameters(), inputCase.getConfiguration().getNoEvidenceMark()))
+		if(!checkParameters(inputCase.getBody().getFields(), inputCase.getBody().getRequestDetails().getNoEvidenceMark()))
 			return Collections.singletonList("");
 		
 		return Collections.emptyList();
@@ -56,14 +56,14 @@ public class DataValidator implements IServiceObjectValidator {
 	 * @param parameters - The parameter list to check
 	 * @return
 	 */
-	private boolean checkParameters(List<InputParameter> parameters, String noEvidenceMarker){
+	private boolean checkParameters(List<InputField> parameters, String noEvidenceMarker){
 		boolean compare2marker = (noEvidenceMarker != null);
 		
 		// false se a lista de parametros estiver vazia
 		if (parameters == null || parameters.isEmpty())
 			return false;
 		
-		for (InputParameter inputParameter : parameters) {
+		for (InputField inputParameter : parameters) {
 			// false se foi indicado o indicador de falta de evidencia e o valor for null
 			if(compare2marker){
 				if (StringUtils.isBlank(inputParameter.getValue()))
@@ -84,38 +84,38 @@ public class DataValidator implements IServiceObjectValidator {
 		return true;
 	}
 
-	private List<String> validateOutputData(OutputCase output){
+	private List<String> validateOutputData(DataEvaluationServiceResult output){
 		
-		if (output.getData() == null || checkDataHeader(output.getData())){
+		if (output.getBody() == null || checkDataHeader(output.getBody())){
 			Collections.singletonList("");
 		}
 		
-		if (hasInvalidParameter(output.getData().getParameters())){
+		if (hasInvalidParameter(output.getBody().getResult().getEvaluatedFields())){
 			Collections.singletonList("");
 		}
 		
 		return Collections.emptyList();
 	}
 	
-	private boolean checkDataHeader(OutputCaseData data){
-		return StringUtils.isBlank(data.getId());
+	private boolean checkDataHeader(ResponseBody data){
+		return StringUtils.isBlank(data.getResult().getCaseDetail().getForm().getCode());
 	}
 	
-	private boolean hasInvalidParameter(List<OutputParameter> parameters){
-		if (CollectionUtils.isEmpty(parameters))
+	private boolean hasInvalidParameter(List<EvaluatedCaseField> fields){
+		if (CollectionUtils.isEmpty(fields))
 			return Boolean.TRUE;
 		
-		for (OutputParameter outputParameter : parameters) {
-			if (StringUtils.isBlank(outputParameter.getId())) {
+		for (EvaluatedCaseField field : fields) {
+			if (StringUtils.isBlank(field.getField().getCode())) {
 				return Boolean.TRUE;
 			}
 			
-			if (CollectionUtils.isEmpty(outputParameter.getResults())){
+			if (CollectionUtils.isEmpty(field.getCatetogies())){
 				return Boolean.TRUE;
 			}
 			
-			for (OutputCategory category : outputParameter.getResults()) {
-				if (StringUtils.isBlank(category.getName()))
+			for (Category category : field.getCatetogies()) {
+				if (StringUtils.isBlank(category.getDescription()))
 					return Boolean.TRUE;
 				
 				if (category.getProbability() == null)

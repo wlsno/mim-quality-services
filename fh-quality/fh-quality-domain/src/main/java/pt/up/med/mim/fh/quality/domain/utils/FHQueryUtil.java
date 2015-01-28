@@ -30,8 +30,7 @@ public class FHQueryUtil {
 	 *         on the reference data table)
 	 */
 	public String buildBayesianNetworkPath(String filename) {
-		return String.format("%s%s%s", QualityConstants.getRepositoryPath(),
-				filename, QualityConstants.getFileExtension());
+		return String.format("%s%s%s", QualityConstants.getRepositoryPath(), filename, QualityConstants.getFileExtension());
 	}
 
 	/**

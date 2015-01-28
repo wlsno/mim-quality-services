@@ -6,12 +6,15 @@ import java.util.List;
 import pt.up.med.mim.fh.quality.domain.inference.beans.DataSetBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterInstanceBean;
+import pt.up.med.mim.fh.quality.service.domain.entities.Category;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceResult;
+import pt.up.med.mim.fh.quality.service.domain.entities.EvaluatedCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.EvaluatedCaseDetail;
+import pt.up.med.mim.fh.quality.service.domain.entities.EvaluatedCaseField;
+import pt.up.med.mim.fh.quality.service.domain.entities.GenericCode;
 import pt.up.med.mim.fh.quality.service.domain.entities.IServiceObject;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCaseData;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCaseDetails;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCategory;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputParameter;
+import pt.up.med.mim.fh.quality.service.domain.entities.InferenceAlgorithm;
+import pt.up.med.mim.fh.quality.service.domain.entities.ResponseBody;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 
 public class OutputCaseConverter implements IServiceObjectConverter {
@@ -20,11 +23,11 @@ public class OutputCaseConverter implements IServiceObjectConverter {
 	 * Converts the given OutpuCase into the DataSetBean
 	 */
 	public void convert(IServiceObject serviceObject, final DataSetBean bean) throws QualityServiceException {
-		OutputCase outputCase = null;
+		DataEvaluationServiceResult outputCase = null;
 		
 		try {
-			outputCase = (OutputCase)serviceObject;
-			convertData(bean, outputCase.getData());
+			outputCase = (DataEvaluationServiceResult)serviceObject;
+			convertData(bean, outputCase.getBody());
 			
 		} catch (Exception e){
 			throw new QualityServiceException();
@@ -32,25 +35,25 @@ public class OutputCaseConverter implements IServiceObjectConverter {
 
 	}
 		
-	private void convertDetails(final DataSetBean bean, OutputCaseDetails details) {
+	private void convertDetails(final DataSetBean bean, ResponseBody details) {
 		
 	}
 	
-	private void convertData(final DataSetBean bean, OutputCaseData data){
-		bean.setArchtypeId(data.getId());
+	private void convertData(final DataSetBean bean, ResponseBody data){
+		bean.setArchtypeId(data.getResult().getCaseDetail().getForm().getCode());
 		
-		for (OutputParameter parameter : data.getParameters()) {
+		for (EvaluatedCaseField parameter : data.getResult().getEvaluatedFields()) {
 			bean.addToParameters(convertParameter(parameter));
 		}
 		
 	}
 		
-	private ParameterBean convertParameter(OutputParameter caseParameter){
+	private ParameterBean convertParameter(EvaluatedCaseField caseParameter){
 		ParameterBean parameterBean = new ParameterBean();
 		
-		parameterBean.setAlias(caseParameter.getId());
-		for (OutputCategory category : caseParameter.getResults()) {
-			ParameterInstanceBean instance = new ParameterInstanceBean(category.getName(), category.getProbability());
+		parameterBean.setAlias(caseParameter.getField().getCode());
+		for (Category category : caseParameter.getCatetogies()) {
+			ParameterInstanceBean instance = new ParameterInstanceBean(category.getDescription(), category.getProbability());
 			parameterBean.addToInstances(instance);
 		}
 		
@@ -70,28 +73,44 @@ public class OutputCaseConverter implements IServiceObjectConverter {
 	}
 	
 	private void convertBackData(DataSetBean bean, IServiceObject outputCase){
-		OutputCaseData data = new OutputCaseData();
-		data.setId(bean.getArchtypeId());
+		if (outputCase == null)
+			outputCase = new DataEvaluationServiceResult();
 		
-		List<OutputParameter> parameters = new ArrayList<OutputParameter>();
-		for (ParameterBean parameter : bean.getParameters()) {
-			parameters.add(convertBackParameter(parameter));
-		}
-		data.setParameters(parameters);
-		((OutputCase)outputCase).setData(data);
+		((DataEvaluationServiceResult)outputCase).setBody(convertToResponseBody(bean));
 	}
 	
-	private OutputParameter convertBackParameter(ParameterBean parameter){
-		OutputParameter caseParameter = new OutputParameter();
-		caseParameter.setId(parameter.getAlias());
-		caseParameter.setResults(new ArrayList<OutputCategory>());
+	private ResponseBody convertToResponseBody(DataSetBean bean){
+		ResponseBody body = new ResponseBody();
+		EvaluatedCase evaluatedCase = new EvaluatedCase();
+		EvaluatedCaseDetail caseDetail = new EvaluatedCaseDetail();
 		
-		for (ParameterInstanceBean instance : parameter.getInstances()) {
-			OutputCategory category = new OutputCategory(instance.getInstanceName(), instance.getConditionalProbability());
-			caseParameter.getResults().add(category);
+		caseDetail.setForm(new GenericCode(bean.getArchtypeId(), null));
+		caseDetail.setAlgorithm(InferenceAlgorithm.valueOf(bean.getAlgorithm().toString()));
+		
+		List<EvaluatedCaseField> fields = new ArrayList<EvaluatedCaseField>();
+		for (ParameterBean field : bean.getParameters()) {
+			fields.add(convertBackField(field));
 		}
 		
-		caseParameter.setMostProbableCategory(new OutputCategory(parameter.getMPC().getInstanceName(), parameter.getMPC().getConditionalProbability()));
+		evaluatedCase.setCaseDetail(caseDetail);
+		evaluatedCase.setEvaluatedFields(fields);
+		body.setResult(evaluatedCase);
+		return body;
+	}
+	
+	private EvaluatedCaseField convertBackField(ParameterBean parameter){
+		EvaluatedCaseField caseParameter = new EvaluatedCaseField();
+		List<Category> categories = new ArrayList<Category>();
+		
+		caseParameter.setField(new GenericCode(parameter.getAlias(), parameter.getOpenEHRpath()));
+		
+		for (ParameterInstanceBean instance : parameter.getInstances()) {
+			Category category = new Category(instance.getInstanceName(), instance.getConditionalProbability());
+			categories.add(category);
+		}
+		
+		caseParameter.setCategories(categories);
+		caseParameter.setMostProbableCategory(new Category(parameter.getMPC().getInstanceName(), parameter.getMPC().getConditionalProbability()));
 		return caseParameter;
 		
 	}

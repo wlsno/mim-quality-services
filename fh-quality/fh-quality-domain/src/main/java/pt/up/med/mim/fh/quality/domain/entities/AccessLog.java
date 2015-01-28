@@ -1,4 +1,4 @@
-package pt.up.med.mim.fh.quality.domain.inference.entities;
+package pt.up.med.mim.fh.quality.domain.entities;
 
 import java.util.Date;
 import java.util.Set;

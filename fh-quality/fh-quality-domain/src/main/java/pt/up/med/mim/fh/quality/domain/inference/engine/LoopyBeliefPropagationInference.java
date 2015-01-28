@@ -52,8 +52,11 @@ public class LoopyBeliefPropagationInference extends SamiamInferenceBase impleme
 			throw new BayesianNetworkException("Error, failed to set evidence");
 		}
 
-//		/* Calculate Pr(e) */
-//		double pE = engine.probability();
+		/* Calculate Pr(e) */
+		double pE = engine.probability();
+		System.out.println("Pr(e): " + pE);
+		System.out.println();
+		
 
 		Set<Variable> setMarginalVariables = buildMarginalVariables(bn, inputdata.getParameters());
 

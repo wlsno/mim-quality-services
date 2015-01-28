@@ -1,4 +1,4 @@
-package pt.up.med.mim.fh.quality.domain.inference.entities;
+package pt.up.med.mim.fh.quality.domain.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,9 +8,7 @@ import pt.up.med.mim.fh.quality.base.entities.DomainObject;
 
 @Entity
 @Table(name="form")
-public class Form extends DomainObject /* implements Serializable */ {
-
-//	private static final long serialVersionUID = 1L;
+public class Form extends DomainObject {
 	
 	private String description;
 	private String bayesianNetworkName;

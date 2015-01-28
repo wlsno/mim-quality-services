@@ -1,9 +1,9 @@
 package pt.up.med.mim.fh.quality.services.base;
 
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceResult;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceRequest;
 
 public interface IQualityService {
 	
-	OutputCase validateCase(InputCase inputData);
+	DataEvaluationServiceResult validateCase(DataEvaluationServiceRequest inputData);
 }

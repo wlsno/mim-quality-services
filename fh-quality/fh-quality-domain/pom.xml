@@ -47,9 +47,10 @@
 		<dependency>
 			<groupId>edu.ucla.belief</groupId>
 			<artifactId>inflib</artifactId>
-			<version>1.0.0</version>
-			<scope>system</scope>
-			<systemPath>/home/willoliveira/Programs/samiam/inflib.jar</systemPath>
+			<version>0.0.1</version>
+			<scope>compile</scope>
+<!-- 			<scope>system</scope> -->
+<!-- 			<systemPath>/home/willoliveira/Programs/samiam/inflib.jar</systemPath> -->
 		</dependency>
 		
 		

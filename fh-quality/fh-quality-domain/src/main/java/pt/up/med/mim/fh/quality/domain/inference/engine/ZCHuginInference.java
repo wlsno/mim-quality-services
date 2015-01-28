@@ -22,8 +22,7 @@ import edu.ucla.belief.io.PropertySuperintendent;
 
 public class ZCHuginInference extends SamiamInferenceBase implements IBayesianInference {
 
-	public DataSetBean evaluate(String path, DataSetBean inputData)
-			throws BayesianNetworkException {
+	public DataSetBean evaluate(String path, DataSetBean inputData) throws BayesianNetworkException {
 
 		BeliefNetwork bn = readNetwork(path);
 
@@ -41,8 +40,8 @@ public class ZCHuginInference extends SamiamInferenceBase implements IBayesianIn
 		ZCEngineGenerator dynamator = new ZCEngineGenerator();
 
 		/* Edit settings. */
-		JoinTreeSettings settings = dynamator.getSettings(
-				(PropertySuperintendent) bn, true);
+		JoinTreeSettings settings = dynamator.getSettings((PropertySuperintendent) bn, true);
+		
 		/*
 		 * Define the elimination order heuristic used to create the join tree,
 		 * one of: MIN_FILL (Min Fill), MIN_SIZE (Min Size)
@@ -62,9 +61,10 @@ public class ZCHuginInference extends SamiamInferenceBase implements IBayesianIn
 		Set<Variable> setMarginalVariables = buildMarginalVariables(bn, inputData.getParameters());
 
 //		/* Calculate Pr(e). */
-//		double pE = engine.probability();
-//		System.out.println("Pr(e): " + pE);
-//		System.out.println();
+		double pE = engine.probability();
+		System.out.println("Pr(e): " + pE);
+		System.out.println();
+		
 		/* Calculate marginals */
 		FiniteVariable varMarginal = null;
 		Table answer = null;

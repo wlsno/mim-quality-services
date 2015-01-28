@@ -6,11 +6,13 @@ import pt.up.med.mim.fh.quality.domain.inference.beans.DataSetBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterBean;
 import pt.up.med.mim.fh.quality.domain.inference.beans.ParameterInstanceBean;
 import pt.up.med.mim.fh.quality.domain.inference.common.InferenceAlgorithm;
+import pt.up.med.mim.fh.quality.service.domain.entities.GenericCode;
 import pt.up.med.mim.fh.quality.service.domain.entities.IServiceObject;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceRequest;
 import pt.up.med.mim.fh.quality.service.domain.entities.InputCaseConfig;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCaseData;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputParameter;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputCaseDetail;
+import pt.up.med.mim.fh.quality.service.domain.entities.InputField;
+import pt.up.med.mim.fh.quality.service.domain.entities.RequestBody;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 
 public class InputCaseConverter implements IServiceObjectConverter {
@@ -19,14 +21,14 @@ public class InputCaseConverter implements IServiceObjectConverter {
 	 * Converts the given InputCase into the DataSetBean
 	 */
 	public void convert(IServiceObject serviceObject, final DataSetBean bean) throws QualityServiceException {
-		InputCase inputCase = null;
+		DataEvaluationServiceRequest inputCase = null;
 		
 		try {
-			inputCase = (InputCase) serviceObject;
-			InputCaseData caseData = inputCase.getData();
+			inputCase = (DataEvaluationServiceRequest) serviceObject;
+			InputCaseDetail caseData = inputCase.getBody().getCaseDetail();
 			
-			convertConfiguration(bean, inputCase.getConfiguration());
-			convertData(bean, caseData);
+			convertConfiguration(bean, inputCase.getBody().getRequestDetails());
+			convertData(bean, inputCase.getBody());
 			
 		} catch (Exception e){
 			e.printStackTrace();
@@ -40,20 +42,20 @@ public class InputCaseConverter implements IServiceObjectConverter {
 		bean.setNoEvidenceMarker(config.getNoEvidenceMark());
 	}
 	
-	private void convertData(final DataSetBean bean, InputCaseData data){
-		bean.setArchtypeId(data.getId());
+	private void convertData(final DataSetBean bean, RequestBody body){
+		bean.setArchtypeId(body.getCaseDetail().getFormIdentifier().getCode());
 		
-		for (InputParameter param: data.getParameters()){
+		for (InputField param: body.getFields()){
 			bean.addToParameters(convertParameter(param));
 			if (param.getIsEvidence() == Boolean.TRUE)
-				bean.setEvidenceToParameter(param.getId(), param.getValue());
+				bean.setEvidenceToParameter(param.getField().getCode(), param.getValue());
 		}
 	}
 	
-	private ParameterBean convertParameter(InputParameter inputParameter) {
+	private ParameterBean convertParameter(InputField inputParameter) {
 		ParameterBean parameterBean = new ParameterBean();
 		
-		parameterBean.setAlias(inputParameter.getId());
+		parameterBean.setAlias(inputParameter.getField().getCode());
 		parameterBean.setHasEvidence(inputParameter.getIsEvidence());
 		
 		if (inputParameter.getIsEvidence() == Boolean.TRUE){
@@ -67,32 +69,32 @@ public class InputCaseConverter implements IServiceObjectConverter {
 	 * Converts the given DataSetBean into the InputCase
 	 */
 	public void convertBack(DataSetBean datasetBean, final IServiceObject inputData) throws QualityServiceException {
-		try {
-			InputCase inputCase = new InputCase();
-			convertBackConfiguration(datasetBean, inputCase);
-			convertBackData(datasetBean, inputCase);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new QualityServiceException("");
-		}
+//		try {
+//			DataEvaluationServiceRequest inputCase = new DataEvaluationServiceRequest();
+//			convertBackConfiguration(datasetBean, inputCase);
+//			convertBackData(datasetBean, inputCase);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			throw new QualityServiceException("");
+//		}
 	}
 	
-	private void convertBackData(DataSetBean datasetBean, final InputCase inputCase) {
-		InputCaseData data = new InputCaseData();
-		data.setId(datasetBean.getArchtypeId());
-		data.setParameters(new ArrayList<InputParameter>());
-		for (ParameterBean bParam : datasetBean.getParameters()){
-			InputParameter parameter = new InputParameter(bParam.getAlias(), bParam.getOpenEHRpath(), bParam.getMPC().getInstanceName(), bParam.getHasEvidence());
-			data.getParameters().add(parameter);
-		}
+	private void convertBackData(DataSetBean datasetBean, final DataEvaluationServiceRequest inputCase) {
+//		InputCaseDetail data = new InputCaseDetail();
+//		data.setFormIdentifier(new GenericCode(datasetBean.getArchtypeId(), null));
+//		data.setFields(new ArrayList<InputField>());
+//		for (ParameterBean bParam : datasetBean.getParameters()){
+//			InputField parameter = new InputField(bParam.getAlias(), bParam.getOpenEHRpath(), bParam.getMPC().getInstanceName(), bParam.getHasEvidence());
+//			data.getParameters().add(parameter);
+//		}
 	}
 
-	private void convertBackConfiguration(DataSetBean datasetBean, final InputCase inputCase) {
-		InputCaseConfig configuration = new InputCaseConfig();
-		configuration.setAlgorithm(pt.up.med.mim.fh.quality.service.domain.entities.InferenceAlgorithm.valueOf(datasetBean.getAlgorithm().name()));
-		configuration.setNoEvidenceMark(datasetBean.getNoEvidenceMarker());
-		
-		inputCase.setConfiguration(configuration);
+	private void convertBackConfiguration(DataSetBean datasetBean, final DataEvaluationServiceRequest inputCase) {
+//		InputCaseConfig configuration = new InputCaseConfig();
+//		configuration.setAlgorithm(pt.up.med.mim.fh.quality.service.domain.entities.InferenceAlgorithm.valueOf(datasetBean.getAlgorithm().name()));
+//		configuration.setNoEvidenceMark(datasetBean.getNoEvidenceMarker());
+//		
+//		inputCase.setConfiguration(configuration);
 
 	}
 }

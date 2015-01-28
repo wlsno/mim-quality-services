@@ -10,8 +10,8 @@ import javax.jws.soap.SOAPBinding;
 import pt.up.med.mim.fh.quality.app.QualityModuleFlux;
 import pt.up.med.mim.fh.quality.common.exception.BayesianNetworkException;
 import pt.up.med.mim.fh.quality.domain.inference.beans.DataSetBean;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceResult;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceRequest;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 import pt.up.med.mim.fh.quality.services.base.IQualityService;
 import pt.up.med.mim.fh.quality.services.base.QualityServiceBase;
@@ -23,9 +23,9 @@ public class DataValidation extends QualityServiceBase implements IQualityServic
 	QualityModuleFlux moduleflux = new QualityModuleFlux();
 
 	@WebMethod(operationName = "validateForm")
-	public OutputCase validateCase(@WebParam(name = "inputData") InputCase inputData) {	
+	public DataEvaluationServiceResult validateCase(@WebParam(name = "inputData") DataEvaluationServiceRequest inputData) {	
 		DataSetBean bean = new DataSetBean();
-		OutputCase result = new OutputCase();
+		DataEvaluationServiceResult result = new DataEvaluationServiceResult();
 
 		try {
 

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import pt.up.med.mim.fh.quality.service.domain.entities.IServiceObject;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceRequest;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 
 public abstract class CaseValidationEngine {
@@ -15,7 +15,7 @@ public abstract class CaseValidationEngine {
 	private static HashMap<String, List<IServiceObjectValidator>> validators = new HashMap<String, List<IServiceObjectValidator>>();
 	
 	static {
-		validators.put(InputCase.class.getName(), Arrays.asList(CONFIG, DATA));
+		validators.put(DataEvaluationServiceRequest.class.getName(), Arrays.asList(CONFIG, DATA));
 	}
 	
 	public static List<String> validate(IServiceObject serviceObject) throws QualityServiceException {

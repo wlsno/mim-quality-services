@@ -4,15 +4,14 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<non-jta-data-source>java:comp/env/jdbc/fhquality</non-jta-data-source>
 		
-        <class>pt.up.med.mim.fh.quality.domain.inference.entities.Form</class>
-        <class>pt.up.med.mim.fh.quality.domain.inference.entities.AccessLog</class>
-        <class>pt.up.med.mim.fh.quality.domain.inference.entities.AccessLogDetail</class>
+        <class>pt.up.med.mim.fh.quality.domain.entities.Form</class>
+        <class>pt.up.med.mim.fh.quality.domain.entities.AccessLog</class>
+        <class>pt.up.med.mim.fh.quality.domain.entities.AccessLogDetail</class>
         <class>pt.up.med.mim.fh.infrastructure.rdata.entities.ReferenceData</class>
         <class>pt.up.med.mim.fh.infrastructure.rdata.entities.ReferenceDataValue</class>
-<!-- 		<jar-file>fh-quality-domain-0.0.1.jar</jar-file> -->
 		
 		<properties>
-            <property name="hibernate.connection.datasource" value="java:comp/env/jdbc/fhquality"/>
+			<property name="hibernate.connection.datasource" value="java:comp/env/jdbc/fhquality"/>
 			<property name="hibernate.max_fetch_depth" value="4" />
 			<property name="hibernate.default_batch_fetch_size" value="4" />
 

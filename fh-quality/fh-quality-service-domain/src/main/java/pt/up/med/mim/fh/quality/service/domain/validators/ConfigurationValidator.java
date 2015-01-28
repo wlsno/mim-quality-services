@@ -5,10 +5,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceRequest;
+import pt.up.med.mim.fh.quality.service.domain.entities.DataEvaluationServiceResult;
+import pt.up.med.mim.fh.quality.service.domain.entities.GenericCode;
 import pt.up.med.mim.fh.quality.service.domain.entities.IServiceObject;
 import pt.up.med.mim.fh.quality.service.domain.entities.InferenceAlgorithm;
-import pt.up.med.mim.fh.quality.service.domain.entities.InputCase;
-import pt.up.med.mim.fh.quality.service.domain.entities.OutputCase;
 import pt.up.med.mim.fh.quality.service.domain.exceptions.QualityServiceException;
 
 public class ConfigurationValidator implements IServiceObjectValidator {
@@ -22,10 +23,10 @@ public class ConfigurationValidator implements IServiceObjectValidator {
 	 */
 	public List<String> validate(IServiceObject serviceObject) throws QualityServiceException {
 		try {
-			if (serviceObject instanceof InputCase){
-				return validateInputData((InputCase)serviceObject);
-			} else if (serviceObject instanceof OutputCase){
-				return validateOutputData((OutputCase)serviceObject);
+			if (serviceObject instanceof DataEvaluationServiceRequest){
+				return validateInputData((DataEvaluationServiceRequest)serviceObject);
+			} else if (serviceObject instanceof DataEvaluationServiceResult){
+				return validateOutputData((DataEvaluationServiceResult)serviceObject);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -37,21 +38,21 @@ public class ConfigurationValidator implements IServiceObjectValidator {
 	
 	/**
 	 * Input Case validator method
-	 * @param inputcase
+	 * @param request
 	 * @return A list of errors or a empty list if no errors were found
 	 */
-	private List<String> validateInputData(InputCase inputcase) {
-		if (inputcase == null || inputcase.getConfiguration() == null || inputcase.getData() == null){
+	private List<String> validateInputData(DataEvaluationServiceRequest request) {
+		if (request == null || request.getBody().getRequestDetails() == null || request.getBody().getRequestDetails() == null){
 			//Inputcase a null
 			//TODO: implementar o método de obter mensagem dos resources
 			return Collections.singletonList("");
 		}
 		
-		if (checkInvalidFormId(inputcase.getData().getId())){
+		if (checkInvalidFormId(request.getBody().getCaseDetail().getFormIdentifier())){
 			return Collections.singletonList("");
 		}
 		
-		if (checkAlgorithm(inputcase.getConfiguration().getAlgorithm())){
+		if (checkAlgorithm(request.getBody().getRequestDetails().getAlgorithm())){
 			return Collections.singletonList("");
 		}
 		
@@ -63,8 +64,11 @@ public class ConfigurationValidator implements IServiceObjectValidator {
 	 * @param formID - The form id to check
 	 * @return true if the string is null or blank
 	 */
-	private boolean checkInvalidFormId(String formID){
-		return StringUtils.isBlank(formID);
+	private boolean checkInvalidFormId(GenericCode formID){
+		if (formID == null)
+			return Boolean.TRUE;
+		
+		return StringUtils.isBlank(formID.getCode());
 	}
 	
 	/**
@@ -78,7 +82,7 @@ public class ConfigurationValidator implements IServiceObjectValidator {
 	
 	
 	
-	private List<String> validateOutputData(OutputCase serviceObject) {
+	private List<String> validateOutputData(DataEvaluationServiceResult serviceObject) {
 		return Collections.emptyList();
 	}
 	
